@@ -1,0 +1,18 @@
+QGroupBox "Рослина"
+  - QLineEdit         → objectName: nameEdit
+  - QComboBox         → objectName: typeCombo      (додай пункти: Орхідея, Кактус, Фікус, Інша)
+  - QDoubleSpinBox    → objectName: potVolumeSpin  (0.1–50, крок 0.5, suffix " л")
+
+QGroupBox "Середовище"
+  - QDoubleSpinBox    → temperatureSpin  (10–40, suffix " °C")
+  - QDoubleSpinBox    → humiditySpin     (0–100, suffix " %")
+  - QSpinBox          → lightHoursSpin   (0–24, suffix " год")
+
+QGroupBox "Ґрунт"
+  - QComboBox         → soilCombo       (Стандартний, Добре дренований, Вологий)
+
+QPushButton "Розрахувати" → objectName: calculateButton
+QLabel (великий)        → objectName: resultLabel      (властивість text → порожньо, rich text увімкнути)
+QListWidget             → objectName: profileList
+QPushButton "Зберегти"  → objectName: saveButton
+QPushButton "Видалити"  → objectName: deleteButton
