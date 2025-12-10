@@ -36,4 +36,3 @@ PlantCareCalcPlus/
 
 ## Kanban-дошка
 [Посилання на GitHub Projects](https://github.com/users/MortofAw/projects/3)
-
