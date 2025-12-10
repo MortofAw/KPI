@@ -1,0 +1,20 @@
+# CMake
+build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+
+# Qt
+*.ui
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+*.o
+*.exe
+*.dll
+
+# IDE
+.vscode/
+.idea/
+*.swp
