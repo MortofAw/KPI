@@ -8,15 +8,11 @@ jobs:
   build:
     runs-on: windows-latest
 
-    defaults:
-      run:
-        working-directory: PlantCareCalcPlus
-
     steps:
     - name: Вивести автора коміту
       run: |
         echo "Автор: ${{ github.actor }}"
-        echo "Повідомлення: ${{ github.event.head_commit.message }}"
+        echo "Коміт: ${{ github.event.head_commit.message }}"
 
     - name: Checkout репозиторію
       uses: actions/checkout@v4
@@ -30,8 +26,9 @@ jobs:
         arch: win64_mingw
         cache: true
 
-    - name: Зібрати проєкт
+    - name: Зібрати проєкт у папці PlantCareCalcPlus
       run: |
+        cd PlantCareCalcPlus
         mkdir build
         cd build
         cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
@@ -47,6 +44,6 @@ jobs:
           Автоматичний реліз
           Автор: @${{ github.actor }}
           Коміт: ${{ github.event.head_commit.message }}
-        files: build/Release/PlantCareCalcPlus.exe
+        files: PlantCareCalcPlus/build/Release/PlantCareCalcPlus.exe
         draft: false
         prerelease: false
