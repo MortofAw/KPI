@@ -1,0 +1,53 @@
+name: Build & Release PlantCareCalc+
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Вивести автора коміту
+      run: echo "Автор: ${{ github.actor }} ( ${{ github.event.head_commit.message }} )"
+
+    - name: Checkout репозиторію
+      uses: actions/checkout@v4
+
+    - name: Встановити Qt6
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '6.8.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_mingw'
+        install-deps: 'true'
+
+    - name: Встановити CMake та Ninja
+      uses: lukka/get-cmake@latest
+
+    - name: Створити папку build та зібрати проєкт
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+        cmake --build . --config Release
+
+    - name: Створити реліз та завантажити .exe
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ github.run_number }}
+        name: PlantCareCalc+ v${{ github.run_number }}
+        body: |
+          Автоматичний реліз при push в main
+          Автор: @${{ github.actor }}
+          Коміт: ${{ github.event.head_commit.message }}
+        files: build/Release/PlantCareCalcPlus.exe
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
