@@ -25,7 +25,6 @@ private:
     QVector<PlantProfile> profiles;
 
     void refreshProfileList();
-    ();
     void fillFormFromProfile(const PlantProfile& p);
     PlantProfile currentProfileFromForm() const;
 };
