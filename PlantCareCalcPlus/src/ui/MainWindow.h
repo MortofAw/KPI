@@ -1,9 +1,6 @@
 #pragma once
-
 #include <QMainWindow>
-#include <QString>
-#include "../storage/ProfileRepository.h"
-#include "../core/PlantProfile.h"
+#include "core/PlantProfile.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -14,18 +11,21 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-    void onAddProfileClicked();
-    void onDeleteProfileClicked();
-    void onProfileSelected();
+    void on_calculateButton_clicked();
+    void on_saveButton_clicked();
+    void on_deleteButton_clicked();
+    void on_profileList_currentRowChanged(int row);
 
 private:
     Ui::MainWindow *ui;
-    ProfileRepository repository;
+    QVector<PlantProfile> profiles;
 
-    PlantProfile currentProfileFromForm();
-    void loadProfilesToList();
+    void refreshProfileList();
+    ();
+    void fillFormFromProfile(const PlantProfile& p);
+    PlantProfile currentProfileFromForm() const;
 };
