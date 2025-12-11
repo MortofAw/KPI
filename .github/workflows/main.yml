@@ -10,7 +10,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./PlantCareCalcPlus
+        working-directory: PlantCareCalcPlus   # ВИПРАВЛЕНО: без ./ і без крапки на початку
 
     steps:
     - name: Вивести автора коміту
@@ -44,7 +44,7 @@ jobs:
         tag_name: v${{ github.run_number }}
         name: PlantCareCalc+ v${{ github.run_number }}
         body: |
-          Автоматичний реліз через GitHub Actions
+          Автоматичний реліз
           Автор: @${{ github.actor }}
           Коміт: ${{ github.event.head_commit.message }}
         files: build/Release/PlantCareCalcPlus.exe
