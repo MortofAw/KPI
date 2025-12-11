@@ -17,31 +17,34 @@ jobs:
     - name: Checkout репозиторію
       uses: actions/checkout@v4
 
-    - name: Встановити Qt6
+    - name: Встановити Qt6 (MSVC)
       uses: jurplel/install-qt-action@v4
       with:
         version: '6.5.0'
         host: windows
         target: desktop
-        arch: win64_mingw
+        arch: win64_msvc2019_64   # ВАЖЛИВО: MSVC, а не MinGW!
         cache: true
 
-    - name: Зібрати проєкт (правильний шлях)
+    - name: Налаштувати Visual Studio Developer Command Prompt
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Зібрати проєкт
       run: |
         cd PlantCareCalcPlus
         mkdir build
         cd build
-        cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+        cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
 
     - name: Створити реліз
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: github.event_name == 'push'
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{ github.run_number }}
         name: PlantCareCalc+ v${{ github.run_number }}
         body: |
-          Автоматичний реліз через GitHub Actions
+          Автоматичний реліз (MSVC)
           Автор: @${{ github.actor }}
           Коміт: ${{ github.event.head_commit.message }}
         files: PlantCareCalcPlus/build/Release/PlantCareCalcPlus.exe
