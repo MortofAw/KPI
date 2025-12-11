@@ -10,11 +10,13 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./PlantCareCalcPlus  # Ключовий рядок — всі команди виконуються в папці проєкту
+        working-directory: ./PlantCareCalcPlus
 
     steps:
     - name: Вивести автора коміту
-      run: echo "Автор: ${{ github.actor }} | Коміт: ${{ github.event.head_commit.message }}"
+      run: |
+        echo "Автор: ${{ github.actor }}"
+        echo "Повідомлення: ${{ github.event.head_commit.message }}"
 
     - name: Checkout репозиторію
       uses: actions/checkout@v4
@@ -23,9 +25,9 @@ jobs:
       uses: jurplel/install-qt-action@v4
       with:
         version: '6.5.0'
-        host: 'windows'
-        target: 'desktop'
-        arch: 'win64_mingw'
+        host: windows
+        target: desktop
+        arch: win64_mingw
         cache: true
 
     - name: Зібрати проєкт
@@ -35,7 +37,7 @@ jobs:
         cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
 
-    - name: Створити реліз (тільки при push в main)
+    - name: Створити реліз
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: softprops/action-gh-release@v2
       with:
