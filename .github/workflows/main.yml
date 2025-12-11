@@ -26,7 +26,7 @@ jobs:
         arch: win64_mingw
         cache: true
 
-    - name: Зібрати проєкт у папці PlantCareCalcPlus
+    - name: Зібрати проєкт (правильний шлях)
       run: |
         cd PlantCareCalcPlus
         mkdir build
@@ -41,7 +41,7 @@ jobs:
         tag_name: v${{ github.run_number }}
         name: PlantCareCalc+ v${{ github.run_number }}
         body: |
-          Автоматичний реліз
+          Автоматичний реліз через GitHub Actions
           Автор: @${{ github.actor }}
           Коміт: ${{ github.event.head_commit.message }}
         files: PlantCareCalcPlus/build/Release/PlantCareCalcPlus.exe
