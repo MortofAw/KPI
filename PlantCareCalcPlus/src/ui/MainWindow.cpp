@@ -1,98 +1,81 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-
-#include "../core/PlantProfile.h"
-#include "../storage/ProfileRepository.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , repository("profiles.json") // Вказуємо файл для збереження профілів
 {
     ui->setupUi(this);
 
-    // Завантажити профілі з файлу
-    repository = new ProfileRepository("profiles.json");
+    // Підключаємо кнопки до слотів
+    connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::onAddProfileClicked);
+    connect(ui->deleteButton, &QPushButton::clicked, this, &MainWindow::onDeleteProfileClicked);
+    connect(ui->profileList, &QListWidget::currentRowChanged, this, &MainWindow::onProfileSelected);
+
     loadProfilesToList();
-
-    connect(ui->addButton, &QPushButton::clicked,
-            this, &MainWindow::onAddProfileClicked);
-
-    connect(ui->deleteButton, &QPushButton::clicked,
-            this, &MainWindow::onDeleteProfileClicked);
-
-    connect(ui->profileList, &QListWidget::currentRowChanged,
-            this, &MainWindow::onProfileSelected);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete repository;
 }
 
-
-// ===========================================================
-//        Правильна функція, що повертає PlantProfile
-// ===========================================================
-
-PlantProfile MainWindow::currentProfileFromForm() const
+PlantProfile MainWindow::currentProfileFromForm()
 {
-    PlantProfile profile;
-    profile.name = ui->nameEdit->text().toStdString();
-    profile.type = ui->typeBox->currentText().toStdString();
-    profile.waterPerWeek = ui->waterSpin->value();
-    profile.lightHours = ui->lightSpin->value();
-    return profile;
+    PlantProfile p;
+    p.name = ui->nameEdit->text().toStdString();
+    p.type = ui->typeBox->currentText().toStdString();
+    p.soilType = ui->soilBox->currentText().toStdString();
+    p.env.waterPerWeek = ui->waterSpin->value();
+    p.env.lightHours = ui->lightSpin->value();
+    p.env.temperature = ui->tempSpin->value();
+    p.env.humidity = ui->humiditySpin->value();
+    p.potVolume = ui->potSpin->value();
+    return p;
 }
 
-
-// ===========================================================
-//                    UI → Repo → UI
-// ===========================================================
+void MainWindow::loadProfilesToList()
+{
+    ui->profileList->clear();
+    for (const auto& profile : repository.getAllProfiles()) {
+        ui->profileList->addItem(QString::fromStdString(profile.name));
+    }
+}
 
 void MainWindow::onAddProfileClicked()
 {
-    PlantProfile profile = currentProfileFromForm();   // ← ТУТ БУЛА ПОМИЛКА (без дужок)
-    repository->addProfile(profile);
-    repository->save();
-
+    PlantProfile p = currentProfileFromForm();
+    repository.addProfile(p);
+    repository.save();
     loadProfilesToList();
 }
 
 void MainWindow::onDeleteProfileClicked()
 {
     int index = ui->profileList->currentRow();
-    if (index < 0) return;
-
-    repository->removeProfile(index);
-    repository->save();
-
-    loadProfilesToList();
+    if (index >= 0) {
+        repository.removeProfile(index);
+        repository.save();
+        loadProfilesToList();
+    } else {
+        QMessageBox::warning(this, "Помилка", "Оберіть профіль для видалення");
+    }
 }
 
-void MainWindow::onProfileSelected(int index)
+void MainWindow::onProfileSelected()
 {
-    if (index < 0 || index >= repository->profiles().size())
-        return;
-
-    const PlantProfile &p = repository->profiles()[index];
-
-    ui->nameEdit->setText(QString::fromStdString(p.name));
-    ui->typeBox->setCurrentText(QString::fromStdString(p.type));
-    ui->waterSpin->setValue(p.waterPerWeek);
-    ui->lightSpin->setValue(p.lightHours);
-}
-
-
-// ===========================================================
-//              Заповнення списку у інтерфейсі
-// ===========================================================
-
-void MainWindow::loadProfilesToList()
-{
-    ui->profileList->clear();
-
-    for (const PlantProfile &p : repository->profiles()) {
-        ui->profileList->addItem(QString::fromStdString(p.name));
+    int index = ui->profileList->currentRow();
+    if (index >= 0) {
+        PlantProfile p = repository.getProfile(index);
+        ui->nameEdit->setText(QString::fromStdString(p.name));
+        ui->typeBox->setCurrentText(QString::fromStdString(p.type));
+        ui->soilBox->setCurrentText(QString::fromStdString(p.soilType));
+        ui->waterSpin->setValue(p.env.waterPerWeek);
+        ui->lightSpin->setValue(p.env.lightHours);
+        ui->tempSpin->setValue(p.env.temperature);
+        ui->humiditySpin->setValue(p.env.humidity);
+        ui->potSpin->setValue(p.potVolume);
     }
 }
