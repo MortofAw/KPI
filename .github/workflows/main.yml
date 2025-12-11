@@ -3,8 +3,6 @@ name: Build & Release PlantCareCalc+
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
@@ -19,14 +17,17 @@ jobs:
     - name: Checkout репозиторію
       uses: actions/checkout@v4
 
+    - name: Перейти в папку проєкту
+      run: cd PlantCareCalcPlus
+
     - name: Встановити Qt6
       uses: jurplel/install-qt-action@v4
       with:
-        version: '6.5.0'  # Стабільна версія, менш проблемна
+        version: '6.5.0'
         host: 'windows'
         target: 'desktop'
         arch: 'win64_mingw'
-        cache: true  # Кеш для швидкості
+        cache: true
 
     - name: Встановити CMake
       uses: lukka/get-cmake@v3.28.3
@@ -35,10 +36,10 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=${{ env.QT_PATH }}
+        cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$ENV{QT_PATH}"
         cmake --build . --config Release
 
-    - name: Створити реліз (тільки для push в main)
+    - name: Створити реліз
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       uses: softprops/action-gh-release@v2
       with:
@@ -48,7 +49,7 @@ jobs:
           Автоматичний реліз
           Автор: @${{ github.actor }}
           Коміт: ${{ github.event.head_commit.message }}
-        files: build/Release/PlantCareCalcPlus.exe
+        files: PlantCareCalcPlus/build/Release/PlantCareCalcPlus.exe
         draft: false
         prerelease: false
       env:
