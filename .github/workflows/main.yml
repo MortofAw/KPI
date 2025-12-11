@@ -10,7 +10,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: PlantCareCalcPlus   # ВИПРАВЛЕНО: без ./ і без крапки на початку
+        working-directory: PlantCareCalcPlus
 
     steps:
     - name: Вивести автора коміту
