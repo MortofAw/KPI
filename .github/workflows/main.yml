@@ -8,17 +8,16 @@ jobs:
   build:
     runs-on: windows-latest
 
+    defaults:
+      run:
+        working-directory: ./PlantCareCalcPlus  # Ключовий рядок — всі команди виконуються в папці проєкту
+
     steps:
     - name: Вивести автора коміту
-      run: |
-        echo "Автор: ${{ github.actor }}"
-        echo "Повідомлення коміту: ${{ github.event.head_commit.message }}"
+      run: echo "Автор: ${{ github.actor }} | Коміт: ${{ github.event.head_commit.message }}"
 
     - name: Checkout репозиторію
       uses: actions/checkout@v4
-
-    - name: Перейти в папку проєкту
-      run: cd PlantCareCalcPlus
 
     - name: Встановити Qt6
       uses: jurplel/install-qt-action@v4
@@ -29,28 +28,23 @@ jobs:
         arch: 'win64_mingw'
         cache: true
 
-    - name: Встановити CMake
-      uses: lukka/get-cmake@v3.28.3
-
     - name: Зібрати проєкт
       run: |
         mkdir build
         cd build
-        cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$ENV{QT_PATH}"
+        cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
 
-    - name: Створити реліз
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    - name: Створити реліз (тільки при push в main)
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{ github.run_number }}
         name: PlantCareCalc+ v${{ github.run_number }}
         body: |
-          Автоматичний реліз
+          Автоматичний реліз через GitHub Actions
           Автор: @${{ github.actor }}
           Коміт: ${{ github.event.head_commit.message }}
-        files: PlantCareCalcPlus/build/Release/PlantCareCalcPlus.exe
+        files: build/Release/PlantCareCalcPlus.exe
         draft: false
         prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
