@@ -64,5 +64,4 @@ cmake --build . --config Release
 Kanban-дошка
 https://github.com/users/MortofAw/projects/3/views/1
 
-тимчасово :
-+ тест CI
+Тимчасово : + тест CI
