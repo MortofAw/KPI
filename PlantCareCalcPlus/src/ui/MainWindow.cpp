@@ -2,7 +2,7 @@
 #include "ui_MainWindow.h"
 
 #include "../core/PlantProfile.h"
-#include "../core/ProfileRepository.h"
+#include "../storage/ProfileRepository.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
